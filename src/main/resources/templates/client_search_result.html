@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Résultat de la recherche</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" crossorigin="anonymous" />
+</head>
+<body>
+<div class="container my-3">
+    <h1>Résultat de la recherche</h1>
+    <div th:if="${foundClient}" class="alert alert-success">
+        <p>Client trouvé :</p>
+        <p th:text="${foundClient.nom}"></p>
+        <p th:text="${foundClient.prenom}"></p>
+        <p th:text="${foundClient.email}"></p>
+        <a th:href="@{/clients/update(id=${foundClient.id})}" class="btn btn-warning">Modifier</a>
+        <a th:href="@{/clients/delete(id=${foundClient.id})}" class="btn btn-danger">Supprimer</a>
+    </div>
+    <div th:if="${message}" class="alert alert-danger">
+        <span th:text="${message}"></span>
+    </div>
+    <a th:href="@{/clients}" class="btn btn-secondary">Retour à la liste des clients</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Nouveau Client</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Créer un Nouveau Client</h1>
+        <form th:action="@{/clients/saveNew}" th:object="${client}" method="post">
+            <!-- Message d'erreur -->
+            <div th:if="${message}" class="alert alert-danger">
+                <p th:text="${message}"></p>
+            </div>
+            
+            <!-- Nom -->
+            <div class="mb-3">
+                <label for="nom" class="form-label">Nom</label>
+                <input type="text" id="nom" th:field="*{nom}" class="form-control" required="required" />
+                <div th:if="${#fields.hasErrors('nom')}" class="text-danger">
+                    <small th:errors="*{nom}"></small>
+                </div>
+            </div>
+
+            <!-- Prénom -->
+            <div class="mb-3">
+                <label for="prenom" class="form-label">Prénom</label>
+                <input type="text" id="prenom" th:field="*{prenom}" class="form-control" required="required" />
+                <div th:if="${#fields.hasErrors('prenom')}" class="text-danger">
+                    <small th:errors="*{prenom}"></small>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" th:field="*{email}" class="form-control" required="required" />
+                <div th:if="${#fields.hasErrors('email')}" class="text-danger">
+                    <small th:errors="*{email}"></small>
+                </div>
+            </div>
+
+            <!-- Boutons -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-success">Enregistrer</button>
+                <a th:href="@{/clients}" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

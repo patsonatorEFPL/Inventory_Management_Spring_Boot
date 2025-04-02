@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle Commande - Étape 2</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>Nouvelle Commande - Étape 2</h1>
+        <h4>Sélection du client</h4>
+        
+        <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+            <span th:text="${errorMessage}"></span>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        Choisir un client
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{'/nouvelle-commande/' + ${commandeTemp.id} + '/terminer'}" method="post">
+                            <div class="form-group">
+                                <label for="clientId">Client:</label>
+                                <select id="clientId" name="clientId" class="form-control" required>
+                                    <option value="">Sélectionner un client</option>
+                                    <option th:each="client : ${clients}" 
+                                            th:value="${client.id}" 
+                                            th:text="${client.nom + ' ' + client.prenom + ' (' + client.email + ')'}">
+                                    </option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success">Finaliser la commande</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        Informations de la commande
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Identifiant:</strong> <span th:text="${commandeTemp.id}"></span></p>
+                        <p><strong>Date:</strong> <span th:text="${#temporals.format(commandeTemp.dateCom, 'dd/MM/yyyy')}"></span></p>
+                        <p><strong>Nombre d'articles:</strong> <span th:text="${commandeTemp.lignesCommande.size()}"></span></p>
+                        <p><strong>Total:</strong> <span th:text="${#numbers.formatDecimal(commandeTemp.coutTotal, 1, 2) + '€'}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                Récapitulatif des articles
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Article</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Sous-total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="ligne : ${commandeTemp.lignesCommande}">
+                            <td th:text="${ligne.articleNom}"></td>
+                            <td th:text="${ligne.prixUnitaire + '€'}"></td>
+                            <td th:text="${ligne.quantite}"></td>
+                            <td th:text="${#numbers.formatDecimal(ligne.prixUnitaire * ligne.quantite, 1, 2) + '€'}"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                            <td><strong th:text="${#numbers.formatDecimal(commandeTemp.coutTotal, 1, 2) + '€'}"></strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="mt-4 text-right">
+            <a th:href="@{'/nouvelle-commande/' + ${commandeTemp.id}}" class="btn btn-secondary mr-2">Retour</a>
+            <a th:href="@{'/nouvelle-commande/' + ${commandeTemp.id} + '/annuler'}" class="btn btn-warning mr-2">Annuler la commande</a>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html> 

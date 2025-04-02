@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Gestion des Commandes</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body>
+    <div class="container my-4">
+        <h1 class="text-center">Gestion des Commandes</h1>
+        <hr />
+        <a th:href="@{/nouvelle-commande/commencer}" class="btn btn-success btn-sm mb-3">Nouvelle Commande</a>
+
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <!-- Filtres de recherche -->
+        <div class="row mb-4">
+            <form th:action="@{/commandes/filter}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-6">
+                    <label for="statut" class="form-label">Rechercher par Statut :</label>
+                    <select id="statut" name="statut" th:value="${filterStatut}" class="form-select">
+                        <option value="">Tous les statuts</option>
+                        <option value="EN_COURS">En cours</option>
+                        <option value="PRETE">Prête</option>
+                        <option value="LIVREE">Livrée</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+                </div>
+                <div class="col-md-2">
+                    <a th:href="@{/commandes}" class="btn btn-secondary w-100">Réinitialiser</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tableau des commandes -->
+        <table class="table table-bordered table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Client</th>
+                    <th>Date/Heure</th>
+                    <th>Statut</th>
+                    <th>Coût Total</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="commande : ${listCommandes}">
+                    <td th:text="${commande.id}"></td>
+                    <td th:text="${commande.client != null ? commande.client.nom + ' ' + commande.client.prenom : ''}"></td>
+                    <td th:text="${#dates.format(commande.dateCreation, 'HH:mm dd/MM/yyyy')}"></td>
+                    <td>
+                        <form th:action="@{/commandes/updateStatut}" method="post" class="d-inline">
+                            <input type="hidden" name="id" th:value="${commande.id}"/>
+                            <input type="hidden" name="currentFilter" th:value="${selectedStatut}" />
+                            <select name="statut" class="form-select form-select-sm d-inline w-auto" 
+                                    onchange="this.form.submit()" th:disabled="${commande.ligneCommandes.isEmpty()}">
+                                <option th:each="statut : ${statuts}"
+                                        th:value="${statut}"
+                                        th:text="${statut}"
+                                        th:selected="${commande.statut == statut}">
+                                </option>
+                            </select>
+                        </form>
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(commande.coutTotal, 1, 2)} + ' €'"></td>
+                    <td>
+                        <div class="btn-group">
+                            <a th:href="@{/commandes/delete(id=${commande.id})}" 
+                               class="btn btn-danger btn-sm me-1"
+                               onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette commande ?')">
+                                Supprimer
+                            </a>
+                            <a th:href="@{'/modifier-commande/' + ${commande.id}}" 
+                               class="btn btn-warning btn-sm me-1">
+                                Modifier
+                            </a>
+                            <a th:href="@{/lignescommande/filter(commandeId=${commande.id})}" 
+                               class="btn btn-info btn-sm">
+                                Détails
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(listCommandes)}">
+                    <td colspan="6" class="text-center">Aucune commande trouvée.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a th:href="@{/}" class="btn btn-secondary">Retour à l'accueil</a>
+    </div>
+</body>
+</html>
