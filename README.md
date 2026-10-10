@@ -1,38 +1,108 @@
-﻿# Inventory_Management_Spring_Boot
+﻿# Snack & Inventory Management — Spring Boot
 
-## **Backend**: Java with Spring Boot, using JPA for data management.
-- **Frontend**: HTML, CSS, JavaScript with Thymeleaf for view rendering.
+Application web MVC complète de gestion commerciale et d'inventaire développée avec **Spring Boot 3**, **Spring Data JPA**, **Thymeleaf** et **MySQL**.
 
-## Inversion of Control
+---
 
-## Transaction Concept
+## Stack technique
 
-## MySQL as the database management system.
+| Composant | Technologie |
+| :--- | :--- |
+| **Backend** | Java 21, Spring Boot 3.4.1 (Spring MVC, Spring Data JPA, Hibernate, Bean Validation) |
+| **Frontend** | Thymeleaf, HTML5, CSS3, JavaScript, Bootstrap 5 (CDN) |
+| **Base de données** | MySQL 8.x |
+| **Build & Outils** | Maven 3.9+, Spring Boot DevTools, Spring Boot Actuator |
 
-## DAO Layer
+---
 
-## Object-Relational Mapping
+## Fonctionnalités
 
-## Hibernate
+- **Gestion des Articles / Catalogue :**
+  - Ajout, consultation, mise à jour et suppression d'articles.
+  - Catégorisation par types d'articles (`TypeArticle`) et gestion des tarifs unitaires.
+- **Gestion des Clients :**
+  - CRUD complet des fiches clients (coordonnées, historique).
+  - Recherche rapide et filtrage de clients.
+- **Tunnel de Commande (Workflow multi-étapes) :**
+  - Création d'une commande en 2 étapes avec panier temporaire (`CommandeTemporaireService`).
+  - Ajout et ajustement des lignes de commande avec calcul automatique des totaux.
+  - Modification, annulation et mise à jour des statuts de commande (`StatutCommande`).
+- **Dashboard :**
+  - Vue d'ensemble de l'activité, liste des commandes en cours et accès rapide aux modules.
 
-## JPA, Spring Data JPA
+---
 
-## 2 Entity Mapping Methods
+## Architecture logicielle
 
-## Spring Boot
+L'application respecte les principes de l'architecture MVC standard et la séparation en couches :
 
-## MVC Architecture + Spring MVC
+```text
+src/main/java/com/snack/
+├── SnackApplication.java         # Point d'entrée Spring Boot
+├── controller/                   # Couche Contrôleurs Spring MVC
+│   ├── AppController.java        # Dashboard et navigation principale
+│   ├── ArticleController.java    # Gestion du catalogue d'articles
+│   ├── ClientController.java     # Gestion des clients et recherche
+│   ├── CommandeController.java   # Consultation et cycle de vie des commandes
+│   ├── NouvelleCommandeController.java # Workflow de prise de commande (étapes 1 & 2)
+│   └── ModifierCommandeController.java # Édition des lignes de commande
+├── service/                      # Couche Métier
+│   └── CommandeTemporaireService.java
+├── repository/                   # Couche Persistance (Spring Data JPA)
+│   ├── ArticleRepository.java
+│   ├── ClientRepository.java
+│   ├── CommandeRepository.java
+│   └── LigneCommandeRepository.java
+└── entity/                       # Modèle de données JPA / Hibernate
+    ├── Article.java
+    ├── Client.java
+    ├── Commande.java
+    ├── LigneCommande.java
+    ├── CommandeTemporaire.java
+    └── StatutCommande.java
+```
 
-## Thymeleaf
+---
 
-## Maven, Gradle
+## Modèle de données
 
-## pom.xml File
+- **Client** `(1) ────── (0..*)` **Commande**
+- **Commande** `(1) ────── (1..*)` **LigneCommande**
+- **Article** `(1) ────── (0..*)` **LigneCommande**
 
-## Bootstrap
+Les relations sont mappées via JPA avec gestion des cascades et intégrité référentielle assurée par Hibernate.
 
-## CDN (Content Delivery Network)
+---
 
-## Method Name Queries (Spring Data JPA)
+## Installation et démarrage
 
-## Annotation-Based Queries (Spring Data JPA)
+### 1. Prérequis
+- **JDK 21** ou supérieur
+- **Maven 3.9+**
+- Instance **MySQL** locale en cours d'exécution
+
+### 2. Base de données
+Créer la base de données MySQL :
+```sql
+CREATE DATABASE snack_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 3. Configuration
+Ajuster le fichier `src/main/resources/application.properties` selon votre environnement local :
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/snack_db?autoReconnect=true&useSSL=false
+spring.datasource.username=root
+spring.datasource.password=votre_mot_de_passe
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+```
+
+### 4. Lancement
+```bash
+# Compilation et démarrage
+./mvnw spring-boot:run
+# Ou sur Windows PowerShell :
+mvn spring-boot:run
+```
+
+L'application est disponible sur : **`http://localhost:8080`**
